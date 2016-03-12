@@ -1,0 +1,155 @@
+#!/bin/sh
+
+#0 check directory
+if [ ! -f ./ds_bind-install ];then
+	echo "** You must do this operation in same directory as 'dstar_gw-install' (0)" | tee -a ~/ds_bind-install.log
+	exit 1
+else
+	true
+fi
+
+#1 whoami
+if [ `whoami` != 'root' ];then
+	echo "error: not root (1)" | tee -a ~/ds_bind-install.log
+	exit 1
+else
+	true	
+fi
+
+#1.1 delete temp-file
+if [ -d /tmp/bindinst ];
+then
+	rm -rf /tmp/bindinst
+	if [ $? != 0 ];then
+		echo "error:Failed to remove temporary file (1.1)"| tee -a ~/ds_bind-install.log
+	else
+		true
+	fi
+else
+	true
+fi
+
+#1.2 create temp-files(1)
+cp bindinst.tar.gz /tmp
+if [ $? != 0 ];then
+	echo "error:Failed to copy ./bindinst.tar.gz to /tmp (1.2)"| tee -a ~/ds_bind-install.log
+else
+	true
+fi
+
+#1.3 create temp-files(2)
+gunzip /tmp/bindinst.tar.gz
+if [ $? != 0 ];then
+	echo "error:Failed to expand files from /tmp/bindinst.tar.gz (1.3)"| tee -a ~/ds_bind-install.log
+else
+	true
+fi
+
+#1.4 create temp-files(3)
+tar -C /tmp -xvf /tmp/bindinst.tar 1>/dev/null
+if [ $? != 0 ];then
+	echo "error:Failed to expand files from /tmp/bindinst.tar  (1.4)"| tee -a ~/ds_bind-install.log
+else
+	true
+fi
+
+#1.5 delete archive
+rm -f /tmp/bindinst.tar
+if [ $? != 0 ];then
+	echo "error:Failed to remove /tmp/dsinst.tar (1.5)"| tee -a ~/ds_bind-install.log
+else
+	true
+fi
+
+#2 Create group 'named'
+groupadd named 2>/dev/null
+case $? in
+	0)	;;
+	9)	;;
+	*)	echo "error: Create group failed. (2)" | tee -a ~/ds_bind-install.log
+		exit 1
+		;;
+esac
+
+
+#3 Over write setting-files(DNS)
+#     backup configuration-files
+echo "use configured 'named.conf'(DNS config)? (Y/n)"
+read ans
+case ${ans} in
+	[yY])	if [ -f /var/named/chroot/etc/named.conf ];then
+				echo "backup 'named.conf' to 'named.conf.old'."
+				cp -f /var/named/chroot/etc/named.conf /var/named/chroot/etc/named.conf.old
+				if [ $? != 0 ];then
+					echo "error:backup 'named.conf' to 'named.conf.old'. (3-1)"| tee -a ~/ds_bind-install.log
+					exit 1
+				else
+					true
+				fi
+			else
+				true
+			fi
+			cp -f /tmp/bindinst/named.conf /var/named/chroot/etc/named.conf
+			if [ $? != 0 ];then
+				echo "error:Copy '/tmp/dsinst/named.conf' to '/var/named/chroot/etc/named.conf' failed. (3-2)"| tee -a ~/ds_bind-install.log
+				exit 1
+			else
+				true
+			fi
+			;;
+	*)		exit 1
+			;;
+esac
+
+#4 change group
+chgrp named /var/named/chroot/etc/named.conf
+if [ $? != 0 ];then
+	echo "error:Failed to 'chgrp named /var/named/chroot/etc/named.conf'. (4)"| tee -a ~/ds_bind-install.log
+	exit 1
+else
+	true
+fi
+
+#5 Create database(DNS) for local D-STAR.
+#     copy nameddb.tar.gz
+cp -f /tmp/bindinst/nameddb.tar.gz /var/named/chroot/var/named
+if [ $? != 0 ];then
+	echo "error:Copy '/tmp/bindinst/nameddb.tar.gz' to '/var/named/chroot/var/named' failed. (5)"| tee -a ~/ds_bind-install.log
+	exit 1
+else
+	true
+fi
+
+#6 unzip nameddb.tar.gz
+gunzip /var/named/chroot/var/named/nameddb.tar.gz
+if [ $? != 0 ];then
+	echo "error:Expand files from '/var/named/chroot/var/named/nameddb.tar.gz' failed. (6)"| tee -a ~/ds_bind-install.log
+	exit 1
+else
+	true
+fi
+
+#7 Extract nameddb.tar
+tar --group named -C /var/named/chroot/var/named/ -xvf /var/named/chroot/var/named/nameddb.tar
+rm -f /var/named/chroot/var/named/nameddb.tar
+if [ $? != 0 ];then
+	echo "error:Extract files from '/var/named/chroot/var/named/nameddb.tar' failed. (7)"| tee -a ~/ds_bind-install.log
+	exit 1
+else
+	true
+fi
+
+#8 delete temp-files
+if [ -d /tmp/bindinst ];
+then
+	rm -rf /tmp/bindinst
+	if [ $? != 0 ];then
+		echo "error:Failed to remove temporary file (8)"| tee -a ~/ds_bind-install.log
+	else
+		true
+	fi
+else
+	true
+fi
+
+echo "*** finished ***"

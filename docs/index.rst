@@ -13,6 +13,42 @@ Contents:
 
     Introduction
 
+Network Setup
+-------------
+
+..  toctree::
+    :maxdepth: 1
+
+    Network/RouterSetup
+    Network/NetworkSetup
+
+Gateway Server Setup
+--------------------
+
+..  toctree::
+    :maxdepth: 1
+
+    GatewayServer/InstallSummary
+    GatewayServer/BootMedia
+    GatewayServer/CentOS_install
+    GatewayServer/DNSInstall
+
+D-Star Protocol
+---------------
+
+..  toctree::
+    :maxdepth: 1
+
+    Protocol/Packets
+
+Appendices
+----------
+
+..  toctree::
+    :maxdepth: 1
+
+    Appendix/CentOS_VM
+
 Indices and tables
 ==================
 

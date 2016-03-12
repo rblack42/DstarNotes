@@ -1,5 +1,5 @@
-D-Star Gateway Setup
-####################
+D-Star Notes: Introduction
+##########################
 
 ..  include:: /references.inc
 

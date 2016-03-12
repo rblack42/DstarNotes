@@ -8,7 +8,7 @@ def ping():
 
 def build():
     with lcd('docs'):
-        local('sphinx-build -b html -d _build . ../htm')
+        local('sphinx-build -b html -d _build . ../html')
 
 def clean():
     local('rm -rf html')
