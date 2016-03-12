@@ -33,6 +33,14 @@ Gateway Server Setup
     GatewayServer/CentOS_install
     GatewayServer/DNSInstall
 
+G2 Software Install
+-------------------
+
+..  toctree::
+    :maxdepth: 1
+
+    G2Software/GatewayInstall
+
 D-Star Protocol
 ---------------
 
