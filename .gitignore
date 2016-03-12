@@ -1,0 +1,12 @@
+# Python
+*.pyc
+
+# Vim
+*.swp *~
+
+# virtualenv
+_venv/
+
+Sphinx
+docs/_build
+
